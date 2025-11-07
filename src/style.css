@@ -1,0 +1,127 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.calculator-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.calculator {
+    background: #1a1a1a;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.display {
+    background: #0a0a0a;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.display-input {
+    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: 300;
+    word-wrap: break-word;
+    word-break: break-all;
+    text-align: right;
+    width: 100%;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.btn {
+    border: none;
+    border-radius: 10px;
+    font-size: 1.5rem;
+    font-weight: 500;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #ffffff;
+    background: #2d2d2d;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-number {
+    background: #3d3d3d;
+}
+
+.btn-number:hover {
+    background: #4d4d4d;
+}
+
+.btn-operator {
+    background: #ff9500;
+    color: #ffffff;
+}
+
+.btn-operator:hover {
+    background: #ffaa33;
+}
+
+.btn-clear {
+    background: #505050;
+    color: #ffffff;
+}
+
+.btn-clear:hover {
+    background: #606060;
+}
+
+.btn-equals {
+    background: #ff9500;
+    color: #ffffff;
+    grid-column: span 1;
+}
+
+.btn-equals:hover {
+    background: #ffaa33;
+}
+
+.btn-zero {
+    grid-column: span 1;
+}
+
+@media (max-width: 480px) {
+    .display-input {
+        font-size: 2rem;
+    }
+    
+    .btn {
+        font-size: 1.2rem;
+        padding: 15px;
+    }
+}
+
