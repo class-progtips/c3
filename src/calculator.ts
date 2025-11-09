@@ -5,9 +5,13 @@ class Calculator {
     private display: HTMLElement;
     private currentInput: string = '0';
     private shouldResetDisplay: boolean = false;
+    private themeToggle: HTMLElement;
+    private currentTheme: string = 'dark';
 
     constructor() {
         this.display = document.getElementById('display')!;
+        this.themeToggle = document.getElementById('themeToggle')!;
+        this.loadTheme();
         this.initializeEventListeners();
     }
 
@@ -25,6 +29,11 @@ class Calculator {
                     this.handleAction(action);
                 }
             });
+        });
+
+        // Обработка переключения темы
+        this.themeToggle.addEventListener('click', () => {
+            this.toggleTheme();
         });
 
         // Обработка клавиатуры
@@ -153,6 +162,33 @@ class Calculator {
             .replace(/-/g, '−');
 
         this.display.textContent = displayText;
+    }
+
+    private toggleTheme(): void {
+        this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', this.currentTheme);
+        this.updateThemeIcon();
+        localStorage.setItem('calculator-theme', this.currentTheme);
+    }
+
+    private loadTheme(): void {
+        const savedTheme = localStorage.getItem('calculator-theme');
+        if (savedTheme === 'light' || savedTheme === 'dark') {
+            this.currentTheme = savedTheme;
+        } else {
+            // Проверяем системные настройки
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            this.currentTheme = prefersDark ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', this.currentTheme);
+        this.updateThemeIcon();
+    }
+
+    private updateThemeIcon(): void {
+        const themeIcon = this.themeToggle.querySelector('.theme-icon');
+        if (themeIcon) {
+            themeIcon.textContent = this.currentTheme === 'dark' ? '☀️' : '🌙';
+        }
     }
 }
 
