@@ -19,6 +19,9 @@
     --btn-clear-hover: #606060;
     --shadow-color: rgba(0, 0, 0, 0.3);
     --btn-border-color: transparent;
+    --history-bg: #252525;
+    --history-border: #3d3d3d;
+    --history-item-hover: #2d2d2d;
 }
 
 [data-theme="light"] {
@@ -36,6 +39,9 @@
     --btn-clear-hover: #d1d5db;
     --shadow-color: rgba(0, 0, 0, 0.1);
     --btn-border-color: #1f2937;
+    --history-bg: #ffffff;
+    --history-border: #e5e7eb;
+    --history-item-hover: #f3f4f6;
 }
 
 body {
@@ -59,6 +65,7 @@ body {
 .theme-toggle-container {
     display: flex;
     justify-content: flex-end;
+    gap: 10px;
     margin-bottom: 20px;
     width: 100%;
     max-width: 400px;
@@ -86,6 +93,35 @@ body {
 
 .theme-toggle:active {
     transform: scale(0.95);
+}
+
+.history-toggle-btn {
+    background: var(--calculator-bg);
+    border: 2px solid var(--btn-bg);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    font-size: 1.5rem;
+}
+
+.history-toggle-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px var(--shadow-color);
+}
+
+.history-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+.history-toggle-btn.active {
+    background: var(--btn-operator-bg);
+    border-color: var(--btn-operator-bg);
 }
 
 .calculator {
@@ -187,6 +223,129 @@ body {
     grid-column: span 1;
 }
 
+/* Стили для журнала операций */
+.history-container {
+    background: var(--history-bg);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 20px 60px var(--shadow-color);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    border: 1px solid var(--history-border);
+}
+
+.history-container.visible {
+    max-height: 500px;
+    opacity: 1;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--history-border);
+}
+
+.history-title {
+    color: var(--display-text);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.btn-clear-history {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 5px;
+    transition: transform 0.2s ease;
+    color: var(--display-text);
+    opacity: 0.7;
+}
+
+.btn-clear-history:hover {
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+.history-list {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.history-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.history-list::-webkit-scrollbar-track {
+    background: var(--display-bg);
+    border-radius: 10px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+    background: var(--btn-bg);
+    border-radius: 10px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+    background: var(--btn-number-bg);
+}
+
+.history-empty {
+    text-align: center;
+    color: var(--display-text);
+    opacity: 0.5;
+    padding: 40px 20px;
+    font-size: 1rem;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    background: var(--display-bg);
+    border: 1px solid var(--history-border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.history-item:hover {
+    background: var(--history-item-hover);
+    transform: translateX(5px);
+}
+
+.history-item:last-child {
+    margin-bottom: 0;
+}
+
+.history-expression {
+    flex: 1;
+    color: var(--display-text);
+    font-size: 1rem;
+    opacity: 0.8;
+    word-break: break-all;
+    padding-right: 10px;
+}
+
+.history-result {
+    color: var(--btn-operator-bg);
+    font-size: 1.1rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 80px;
+}
+
 @media (max-width: 480px) {
     .display-input {
         font-size: 2rem;
@@ -195,6 +354,23 @@ body {
     .btn {
         font-size: 1.2rem;
         padding: 15px;
+    }
+
+    .history-container.visible {
+        max-height: 300px;
+    }
+
+    .history-list {
+        max-height: 250px;
+    }
+
+    .history-expression {
+        font-size: 0.9rem;
+    }
+
+    .history-result {
+        font-size: 1rem;
+        min-width: 60px;
     }
 }
 

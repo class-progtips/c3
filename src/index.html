@@ -11,6 +11,9 @@
             <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
                 <span class="theme-icon">🌙</span>
             </button>
+            <button class="history-toggle-btn" id="historyToggle" aria-label="Показать историю операций">
+                <span class="history-icon">📋</span>
+            </button>
         </div>
         <div class="calculator">
             <div class="display">
@@ -41,6 +44,13 @@
                 <button class="btn btn-number" data-value=".">.</button>
                 <button class="btn btn-equals" data-action="equals">=</button>
             </div>
+        </div>
+        <div class="history-container" id="historyContainer">
+            <div class="history-header">
+                <h3 class="history-title">История операций</h3>
+                <button class="btn-clear-history" id="clearHistoryBtn" aria-label="Очистить историю">🗑️</button>
+            </div>
+            <div class="history-list" id="historyList"></div>
         </div>
     </div>
 </body>
