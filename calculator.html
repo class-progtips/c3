@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Калькулятор</title>
     <style>
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --calculator-bg: #ffffff;
+            --display-bg: #1a1a1a;
+            --display-text: #ffffff;
+            --button-bg: #f0f0f0;
+            --button-hover: #e0e0e0;
+            --button-text: #333;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --shadow-light: rgba(0, 0, 0, 0.2);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --calculator-bg: #2d2d44;
+            --display-bg: #1a1a1a;
+            --display-text: #ffffff;
+            --button-bg: #3d3d5c;
+            --button-hover: #4d4d6c;
+            --button-text: #e0e0e0;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --shadow-light: rgba(0, 0, 0, 0.3);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -17,22 +43,49 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             padding: 20px;
+            transition: background 0.3s ease;
         }
 
         .calculator {
-            background: #ffffff;
+            background: var(--calculator-bg);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px var(--shadow);
             padding: 30px;
             max-width: 400px;
             width: 100%;
+            position: relative;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--button-bg);
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            color: var(--button-text);
+            box-shadow: 0 2px 8px var(--shadow-light);
+        }
+
+        .theme-toggle:hover {
+            background: var(--button-hover);
+            transform: scale(1.1);
         }
 
         .display {
-            background: #1a1a1a;
-            color: #ffffff;
+            background: var(--display-bg);
+            color: var(--display-text);
             font-size: 2.5rem;
             padding: 20px;
             text-align: right;
@@ -53,7 +106,7 @@
         }
 
         button {
-            background: #f0f0f0;
+            background: var(--button-bg);
             border: none;
             border-radius: 10px;
             font-size: 1.5rem;
@@ -61,18 +114,18 @@
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 600;
-            color: #333;
+            color: var(--button-text);
         }
 
         button:hover {
-            background: #e0e0e0;
+            background: var(--button-hover);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px var(--shadow-light);
         }
 
         button:active {
             transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px var(--shadow-light);
         }
 
         .operator {
@@ -109,6 +162,9 @@
 </head>
 <body>
     <div class="calculator">
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Переключить тему">
+            <span id="themeIcon">🌙</span>
+        </button>
         <div class="display" id="display">0</div>
         <div class="buttons">
             <button class="clear" onclick="clearDisplay()">C</button>
@@ -137,6 +193,29 @@
     </div>
 
     <script>
+        // Инициализация темы
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const themeIcon = document.getElementById('themeIcon');
+            themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Инициализация при загрузке страницы
+        initTheme();
+
         let display = document.getElementById('display');
         let currentInput = '0';
         let shouldResetDisplay = false;
