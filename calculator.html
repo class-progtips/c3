@@ -16,6 +16,9 @@
             --button-text: #333;
             --shadow: rgba(0, 0, 0, 0.3);
             --shadow-light: rgba(0, 0, 0, 0.2);
+            --history-bg: #f8f8f8;
+            --history-text: #333;
+            --history-border: #e0e0e0;
         }
 
         [data-theme="dark"] {
@@ -29,6 +32,9 @@
             --button-text: #e0e0e0;
             --shadow: rgba(0, 0, 0, 0.5);
             --shadow-light: rgba(0, 0, 0, 0.3);
+            --history-bg: #252538;
+            --history-text: #e0e0e0;
+            --history-border: #3d3d5c;
         }
 
         * {
@@ -41,11 +47,20 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
             background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             padding: 20px;
             transition: background 0.3s ease;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                align-items: center;
+            }
         }
 
         .calculator {
@@ -158,6 +173,92 @@
         .zero {
             grid-column: span 2;
         }
+
+        .history-panel {
+            background: var(--history-bg);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px var(--shadow);
+            padding: 20px;
+            max-width: 300px;
+            width: 100%;
+            max-height: 600px;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--history-border);
+        }
+
+        .history-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--history-text);
+        }
+
+        .clear-history {
+            background: #ff6b6b;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .clear-history:hover {
+            background: #ee5a5a;
+            transform: translateY(-1px);
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+
+        .history-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: var(--calculator-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--history-border);
+        }
+
+        .history-item:hover {
+            background: var(--button-hover);
+            transform: translateX(5px);
+        }
+
+        .history-expression {
+            font-size: 0.9rem;
+            color: var(--history-text);
+            opacity: 0.7;
+            margin-bottom: 4px;
+        }
+
+        .history-result {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--history-text);
+        }
+
+        .history-empty {
+            text-align: center;
+            color: var(--history-text);
+            opacity: 0.5;
+            padding: 40px 20px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -192,6 +293,16 @@
         </div>
     </div>
 
+    <div class="history-panel">
+        <div class="history-header">
+            <div class="history-title">Журнал операций</div>
+            <button class="clear-history" onclick="clearHistory()" title="Очистить журнал">Очистить</button>
+        </div>
+        <div class="history-list" id="historyList">
+            <div class="history-empty">Журнал пуст</div>
+        </div>
+    </div>
+
     <script>
         // Инициализация темы
         function initTheme() {
@@ -219,6 +330,86 @@
         let display = document.getElementById('display');
         let currentInput = '0';
         let shouldResetDisplay = false;
+        let operationHistory = [];
+
+        // Загрузка истории из localStorage
+        function loadHistory() {
+            const saved = localStorage.getItem('operationHistory');
+            if (saved) {
+                operationHistory = JSON.parse(saved);
+                renderHistory();
+            }
+        }
+
+        // Сохранение истории в localStorage
+        function saveHistory() {
+            localStorage.setItem('operationHistory', JSON.stringify(operationHistory));
+        }
+
+        // Добавление операции в журнал
+        function addToHistory(expression, result) {
+            const historyItem = {
+                expression: expression,
+                result: result,
+                timestamp: new Date().toLocaleTimeString('ru-RU')
+            };
+            operationHistory.unshift(historyItem);
+            
+            // Ограничиваем количество записей (максимум 50)
+            if (operationHistory.length > 50) {
+                operationHistory = operationHistory.slice(0, 50);
+            }
+            
+            saveHistory();
+            renderHistory();
+        }
+
+        // Экранирование HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Отрисовка журнала
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            if (operationHistory.length === 0) {
+                historyList.innerHTML = '<div class="history-empty">Журнал пуст</div>';
+                return;
+            }
+            
+            historyList.innerHTML = operationHistory.map((item, index) => {
+                const displayExpression = item.expression.replace(/\*/g, '×');
+                const escapedResult = escapeHtml(item.result);
+                const escapedExpression = escapeHtml(displayExpression);
+                return `
+                    <div class="history-item" onclick="useHistoryResult(${index})" title="Нажмите, чтобы использовать результат">
+                        <div class="history-expression">${escapedExpression}</div>
+                        <div class="history-result">= ${escapedResult}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Использование результата из журнала
+        function useHistoryResult(index) {
+            if (operationHistory[index]) {
+                currentInput = operationHistory[index].result;
+                shouldResetDisplay = false;
+                updateDisplay();
+            }
+        }
+
+        // Очистка журнала
+        function clearHistory() {
+            if (confirm('Очистить журнал операций?')) {
+                operationHistory = [];
+                saveHistory();
+                renderHistory();
+            }
+        }
 
         function updateDisplay() {
             display.textContent = currentInput;
@@ -268,6 +459,7 @@
             try {
                 // Заменяем × на * для вычисления
                 let expression = currentInput.replace(/×/g, '*');
+                const originalExpression = currentInput;
                 
                 // Проверяем на деление на ноль
                 if (expression.includes('/0') && !expression.includes('/0.')) {
@@ -282,7 +474,10 @@
                 if (isNaN(result) || !isFinite(result)) {
                     currentInput = 'Ошибка';
                 } else {
-                    currentInput = result.toString();
+                    const resultStr = result.toString();
+                    currentInput = resultStr;
+                    // Добавляем операцию в журнал
+                    addToHistory(originalExpression, resultStr);
                 }
                 
                 updateDisplay();
@@ -313,6 +508,9 @@
             }
             updateDisplay();
         }
+
+        // Загрузка истории при загрузке страницы
+        loadHistory();
 
         // Поддержка клавиатуры
         document.addEventListener('keydown', function(event) {
